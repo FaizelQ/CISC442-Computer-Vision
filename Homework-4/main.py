@@ -7,7 +7,7 @@ def canny_corner(image, filename):
 
     # Corner
     # Apply Harris Corner Detection
-    corners = cv.cornerHarris(image, blockSize= 2, ksize = 3, k = 0.04)
+    corners = cv.cornerHarris(image, blockSize= 3, ksize = 5, k = 0.05)
 
     # Threshold for selecting strong corners
     threshold = 0.001 * corners.max()
@@ -16,7 +16,7 @@ def canny_corner(image, filename):
     # Draw larger circles around the detected corners
     image_with_corners = cv.cvtColor(image, cv.COLOR_GRAY2BGR)  # Convert to color for blue circles
     for y, x in zip(*corner_coordinates):
-        cv.circle(image_with_corners, (x, y), 1, (255, 0, 0), -1)  # Blue circles
+        cv.circle(image_with_corners, (x, y), 3, (255, 0, 0), -1)  # Blue circles
 
 
     # Save the output images
@@ -38,8 +38,29 @@ rotated_image = cv.warpAffine(original_image, rotation_matrix, (width, height))
 cv.imwrite("rotated_image.jpg", rotated_image)
 canny_corner(rotated_image, "rotated_image")
 
+# FIX HERE - THIS ONE IS NOT WORKING
 # 3) Scale the original image by 1.6 in both the x and y-directions and perform (1)
+scale_factor = 1.6
+scaled_image = cv.resize(original_image, None, fx = scale_factor, fy = scale_factor) # dsize parameter set to (0, 0) since we are using scaling factor
+cv.imwrite("scaled_image.jpg", scaled_image)
+canny_corner(scaled_image, "scaled_image")
 
+# 4) Shear the original image in the x-direction by 1.2 and perform (1)
+shear_matrix = np.array([[1, 1.2, 0],
+                          [0, 1, 0],
+                          [0, 0, 1]])
 
+sheared_img = cv.warpPerspective(original_image, shear_matrix, (int(width * 1.5), int(height * 1.5))) # Scaling output image dimensions by 1.5 to see full shear
+cv.imwrite("sheared_image_x.jpg", sheared_img)
+canny_corner(sheared_img, "sheared_img_x")
+
+# 5) Shear the original image in the y-direction by 1.4 and perform (1)
+shear_matrix = np.array([[1, 0, 0],
+                          [1.2, 1, 0],
+                          [0, 0, 1]])
+
+sheared_img = cv.warpPerspective(original_image, shear_matrix, (int(width * 1.5), int(height * 1.5))) # Scaling output image dimensions by 1.5 to see full shear
+cv.imwrite("sheared_image_y.jpg", sheared_img)
+canny_corner(sheared_img, "sheared_img_y")
 
 
