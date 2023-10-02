@@ -1,0 +1,16 @@
+# config.yaml
+
+# file locations
+file_locations:
+  - "./images/lena.png"
+  - "./images/TEST_A1.png"
+  - "./images/TEST_A2.png"
+  - "./images/TEST_B1.png"
+  - "./images/TEST_B2.png"
+  - "./images/TEST_C1.png"
+  - "./images/TEST_C2.png"
+  - "./images/TEST_D1.png"
+  - "./images/TEST_D2.png"
+
+
+
