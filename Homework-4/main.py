@@ -57,7 +57,7 @@ canny_corner(sheared_img, "sheared_img_x")
 
 # 5) Shear the original image in the y-direction by 1.4 and perform (1)
 shear_matrix = np.array([[1, 0, 0],
-                          [1.2, 1, 0],
+                          [1.4, 1, 0],
                           [0, 0, 1]])
 
 sheared_img = cv.warpPerspective(original_image, shear_matrix, (int(cols * 1.5), int(rows * 1.5))) # Scaling output image dimensions by 1.5 to see full shear
