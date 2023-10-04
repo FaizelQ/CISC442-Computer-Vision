@@ -8,10 +8,10 @@ with open('config.yaml', 'r') as config_file:
     config = yaml.safe_load(config_file)
 
 # Extract the file location for the image you want to process
-image_file_path = config['file_locations'][0]  # Assuming 'lena.png' is the first entry
+lena_file_path = config['file_locations'][0]  # Assuming 'lena.png' is the first entry
 
 # Load the image in grayscale
-image = cv2.imread(image_file_path)
+image = cv2.imread(lena_file_path)
 
 # Problem 1 - convolve
 sobel_y_kernel = np.array([[-1, 0, 1],
@@ -37,4 +37,6 @@ cv2.imwrite("./images/expand-function-lena.png", image_upsampled)
 # Testing
 test_upsampled = cv2.pyrUp(image_downsample)
 cv2.imwrite("./images/test-expand-lena.png", test_upsampled)
+
+
 
