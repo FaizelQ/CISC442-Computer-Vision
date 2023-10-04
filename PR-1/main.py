@@ -25,7 +25,7 @@ sobel_image = faiCv.convolve(image, sobel_y_kernel)
 cv2.imwrite("./images/convolve-function-lena.png", sobel_image)
 # Testing
 test_sobel_image = cv2.filter2D(src = image, ddepth = -1, kernel = sobel_y_kernel)
-print(np.array_equal(sobel_image, test_sobel_image))
+cv2.imwrite("./images/test-filter2D-sobel.png", test_sobel_image)
 
 # Problem 2 - reduce
 image_downsample = faiCv.reduce(image)
