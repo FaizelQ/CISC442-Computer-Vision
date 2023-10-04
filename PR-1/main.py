@@ -56,3 +56,8 @@ for i in range(n):
 # Problem 6 - reconstruct
 reconstructed_image = faiCv.reconstruct(laplacian_pyramid, n)
 cv2.imwrite("./images/reconstructed-lena.png", reconstructed_image)
+
+image_difference = cv2.absdiff(image, reconstructed_image)
+with open("./image_difference.txt", "w") as f:
+    for row in image_difference:
+        f.write(",".join(map(str, row)) + "\n")
