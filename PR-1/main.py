@@ -40,16 +40,19 @@ cv2.imwrite("./images/expand-function-lena.png", image_upsampled)
 test_upsampled = cv2.pyrUp(image_downsample)
 cv2.imwrite("./images/test-expand-lena.png", test_upsampled)
 
-# Problem 4 - Gaussian Pyramid
+# Problem 4 - gaussianPyramid
 n = 4  # Number of levels
 gaussian_pyramid = faiCv.gaussianPyramid(image, n)
 for i in range(n):
     cv2.imwrite(
         f"./images/gaussian-pyramind-level{i + 1}-lena.png", gaussian_pyramid[i])
 
-# Problem 5 - Laplacian Pyramid
-n = 4  # Number of levels
+# Problem 5 - laplacianPyramid
 laplacian_pyramid = faiCv.laplacianPyramid(image, n)
 for i in range(n):
     cv2.imwrite(
         f"./images/laplacian-pyramind-level{i + 1}-lena.png", laplacian_pyramid[i])
+
+# Problem 6 - reconstruct
+reconstructed_image = faiCv.reconstruct(laplacian_pyramid, n)
+cv2.imwrite("./images/reconstructed-lena.png", reconstructed_image)

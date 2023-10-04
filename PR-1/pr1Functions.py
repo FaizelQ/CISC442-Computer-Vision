@@ -157,6 +157,16 @@ def laplacianPyramid(I_input, n):
 
 
 def reconstruct(LI, n):
-    pass
+
+    # Initalize output image as highest level of pyramid
+    I_output = LI[n - 1]
+
+    # Iterate backwards from Top to Bottom collapsing
+    for i in range(n - 2, -1, -1):
+        # Upsample current level for matrix addition and so dimensions match
+        I_output = expand(I_output)
+        I_output += LI[i]
+    
+    return I_output
 
 #################################################################
