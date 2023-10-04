@@ -14,8 +14,8 @@ def convolve(I_input, H):
     # Checking if image is appropriate for manipulation
     if I_input is None:
         raise ValueError("Image does not exist")
-    elif I_input.ndim < 2:
-        raise ValueError("Image must be 2D matrix")
+    elif I_input.ndim < 3:
+        raise ValueError("Image must be 3D matrix")
     else:
         log.info("Image is exists and is valid")
 
@@ -53,8 +53,8 @@ def reduce(I_input):
     # Checking if image is appropriate for manipulation
     if I_input is None:
         raise ValueError("Image does not exist")
-    elif I_input.ndim < 2:
-        raise ValueError("Image must be 2D matrix")
+    elif I_input.ndim < 3:
+        raise ValueError("Image must be 3D matrix")
     else:
         log.info("Image is exists and is valid")
 
@@ -69,10 +69,6 @@ def reduce(I_input):
 
     return I_downsample
 
-
-
-
-
 #################################################################
 
 # Write a function Expand(I) that takes image I as input and outputs a copy of the image expanded,
@@ -80,7 +76,18 @@ def reduce(I_input):
 
 
 def expand(I):
-    pass
+    # Checking if image is appropriate for manipulation
+    if I_input is None:
+        raise ValueError("Image does not exist")
+    elif I_input.ndim < 3:
+        raise ValueError("Image must be 3D matrix")
+    else:
+        log.info("Image is exists and is valid")
+    
+    # Height, width, RGB channels (channels should be 3 - R, G, B)
+    rows, cols, channels = I_input.shape
+
+
 
 
 #################################################################
