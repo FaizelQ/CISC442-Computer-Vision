@@ -135,18 +135,8 @@ def reconstruct(LI, n):
 
     return I_output
 
-
+# Function calculates the Mean Squared Error of the image difference between the original image and reconstructed image.
 def calculate_mse(image_1, image_2):
-    """
-    Calculates the Mean Squared Error (MSE) for the difference of two images.
-
-    Args:
-        image_1: The first image.
-        image_2: The second image.
-
-    Returns:
-        The MSE for the difference of the two images.
-    """
     # Convert the images to grayscale.
     image_1_gray = cv2.cvtColor(image_1, cv2.COLOR_BGR2GRAY)
     image_2_gray = cv2.cvtColor(image_2, cv2.COLOR_BGR2GRAY)
@@ -187,14 +177,17 @@ def get_mouse_coordinates(left_image, right_image):
             if event == cv2.EVENT_LBUTTONDOWN:
                 mouse_coordinates.append((x, y))
                 # Draw circle on point
-                cv2.circle(image, (x, y), 10, (255, 0, 0), -1)
+                cv2.circle(image, (x, y), 3, (255, 0, 0), -1)
                 cv2.imshow('Image Window', image)
                 print(f"Left button clicked ({x}, {y})")
 
         # Callback
         cv2.setMouseCallback('Image Window', mouse_handler_function)
+        # Display iamge
         cv2.imshow('Image Window', image)
         cv2.waitKey(0)
         cv2.destroyWindow('Image Window')
 
     return mouse_coordinates
+
+def blend_images(left_image, right_image, mouse_coordinates):
