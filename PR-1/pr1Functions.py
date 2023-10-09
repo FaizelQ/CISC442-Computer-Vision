@@ -166,7 +166,40 @@ def reconstruct(LI, n):
         # Upsample current level for matrix addition and so dimensions match
         I_output = expand(I_output)
         I_output += LI[i]
-    
+
     return I_output
 
+
+def calculate_mse(image_1, image_2):
+    """
+    Calculates the Mean Squared Error (MSE) for the difference of two images.
+
+    Args:
+        image_1: The first image.
+        image_2: The second image.
+
+    Returns:
+        The MSE for the difference of the two images.
+    """
+    # Convert the images to grayscale.
+    image_1_gray = cv2.cvtColor(image_1, cv2.COLOR_BGR2GRAY)
+    image_2_gray = cv2.cvtColor(image_2, cv2.COLOR_BGR2GRAY)
+
+    # Compute the pixel difference between the two images.
+    difference = image_1_gray - image_2_gray
+
+    # Square the pixel differences.
+    squared_difference = difference ** 2
+
+    # Compute the average of the squared pixel differences.
+    mse = np.mean(squared_difference)
+
+    return mse
+
 #################################################################
+
+
+def blending(left_image, right_image):
+    # Display images
+    cv2.imshow("Left Image", left_image)
+    cv2.imshow("Right Image", right_image)
