@@ -19,14 +19,14 @@ sobel_y_kernel = np.array([[-1, 0, 1],
                            [-2, 0, 2],
                            [-1, 0, 1]])
 sobel_image = faiCv.convolve(image, sobel_y_kernel)
-cv2.imwrite("./images/convolve-sobel-lena.png", sobel_image)
+cv2.imwrite("./images/Q1-convolve-sobel-lena.png", sobel_image)
 # Testing
 test_sobel_image = cv2.filter2D(src=image, ddepth=-1, kernel=sobel_y_kernel)
 cv2.imwrite("./images/test-convolve-sobel.png", test_sobel_image)
 
 # Problem 2 - reduce
 image_downsample = faiCv.reduce(image)
-cv2.imwrite("./images/reduce-lena.png", image_downsample)
+cv2.imwrite("./images/Q2-reduce-lena.png", image_downsample)
 # Testing
 test_blurred_image = cv2.GaussianBlur(image, (3, 3), 0)
 test_resized_image = cv2.resize(
@@ -35,7 +35,7 @@ cv2.imwrite("./images/test-reduce-lena.png", test_resized_image)
 
 # Problem 3 - expand
 image_upsampled = faiCv.expand(image_downsample)
-cv2.imwrite("./images/expand-function-lena.png", image_upsampled)
+cv2.imwrite("./images/Q3-expand-function-lena.png", image_upsampled)
 # Testing
 test_upsampled = cv2.pyrUp(image_downsample)
 cv2.imwrite("./images/test-expand-lena.png", test_upsampled)
@@ -45,17 +45,21 @@ n = 4  # Number of levels
 gaussian_pyramid = faiCv.gaussianPyramid(image, n)
 for i in range(n):
     cv2.imwrite(
-        f"./images/gaussian-pyramind-level{i + 1}-lena.png", gaussian_pyramid[i])
+        f"./images/Q4-gaussian-pyramind-level{i + 1}-lena.png", gaussian_pyramid[i])
 
 # Problem 5 - laplacianPyramid
 laplacian_pyramid = faiCv.laplacianPyramid(image, n)
 for i in range(n):
     cv2.imwrite(
-        f"./images/laplacian-pyramind-level{i + 1}-lena.png", laplacian_pyramid[i])
+        f"./images/Q5-laplacian-pyramind-level{i + 1}-lena.png", laplacian_pyramid[i])
 
 # Problem 6 - reconstruct
 reconstructed_image = faiCv.reconstruct(laplacian_pyramid, n)
-cv2.imwrite("./images/reconstructed-lena.png", reconstructed_image)
+cv2.imwrite("./images/Q6-reconstructed-lena.png", reconstructed_image)
 
 image_difference = faiCv.calculate_mse(image, reconstructed_image)
 print(f"Image Difference: {image_difference}")
+
+one = cv2.imread("./images/Test_A1.png")
+two = cv2.imread("./images/Test_A2.png")
+test = faiCv.get_mouse_coordinates(one, two)

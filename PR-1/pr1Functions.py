@@ -9,7 +9,6 @@ import logging as log
 
 
 def convolve(I_input, H):
-
     # Checking if image is appropriate for manipulation
     if I_input is None:
         raise ValueError("Image does not exist")
@@ -51,15 +50,6 @@ def convolve(I_input, H):
 
 
 def reduce(I_input):
-
-    # Checking if image is appropriate for manipulation
-    if I_input is None:
-        raise ValueError("Image does not exist")
-    elif I_input.ndim < 2:
-        raise ValueError("Image must be 2D matrix")
-    else:
-        log.info("Image is exists and is valid")
-
     # Height, width, RGB channels (channels should be 3 - R, G, B)
     rows, cols, channels = I_input.shape
 
@@ -78,14 +68,6 @@ def reduce(I_input):
 
 
 def expand(I_input):
-    # Checking if image is appropriate for manipulation
-    if I_input is None:
-        raise ValueError("Image does not exist")
-    elif I_input.ndim < 2:
-        raise ValueError("Image must be 2D matrix")
-    else:
-        log.info("Image is exists and is valid")
-
     # Height, width, RGB channels (channels should be 3 - R, G, B)
     rows, cols, channels = I_input.shape
 
@@ -99,14 +81,6 @@ def expand(I_input):
 
 
 def gaussianPyramid(I_input, n):
-    # Checking if image is appropriate for manipulation
-    if I_input is None:
-        raise ValueError("Image does not exist")
-    elif I_input.ndim < 2:
-        raise ValueError("Image must be 2D matrix")
-    else:
-        log.info("Image is exists and is valid")
-
     # Create list to hold each level of pyramid
     gaussian_pyramind = []
     gaussian_pyramind.append(I_input)
@@ -125,14 +99,6 @@ def gaussianPyramid(I_input, n):
 
 
 def laplacianPyramid(I_input, n):
-    # Checking if image is appropriate for manipulation
-    if I_input is None:
-        raise ValueError("Image does not exist")
-    elif I_input.ndim < 2:
-        raise ValueError("Image must be 2D matrix")
-    else:
-        log.info("Image is exists and is valid")
-
     # Construct Gaussian pyramid
     gaussian_pyramid = gaussianPyramid(I_input, n)
 
@@ -198,8 +164,37 @@ def calculate_mse(image_1, image_2):
 
 #################################################################
 
+# Finally, you will be mosaicking images using Laplacian plane based reconstruction (Note that your program
+# should handle color images). Let the user pick the blend boundaries of all images by mouse. Blend
+# the left image with the right image. Note the left and right images share a joint region. Submit four results of
+# mosaicking. Each mosaic can be comprised of 2 individual images from different cameras/viewpoints.
 
-def blending(left_image, right_image):
-    # Display images
-    cv2.imshow("Left Image", left_image)
-    cv2.imshow("Right Image", right_image)
+
+def get_mouse_coordinates(left_image, right_image):
+    # List to store coordinates
+    mouse_coordinates = []
+    images = [left_image, right_image]
+
+    print("Mark boundary on left image (top to bottom)")
+    print("Mark boundary on right image (top to bottom)")
+
+    for image in images:
+        cv2.namedWindow('Image Window')
+
+        # Function handler
+        def mouse_handler_function(event, x, y, flags, param):
+            # Left mouse button clicked
+            if event == cv2.EVENT_LBUTTONDOWN:
+                mouse_coordinates.append((x, y))
+                # Draw circle on point
+                cv2.circle(image, (x, y), 10, (255, 0, 0), -1)
+                cv2.imshow('Image Window', image)
+                print(f"Left button clicked ({x}, {y})")
+
+        # Callback
+        cv2.setMouseCallback('Image Window', mouse_handler_function)
+        cv2.imshow('Image Window', image)
+        cv2.waitKey(0)
+        cv2.destroyWindow('Image Window')
+
+    return mouse_coordinates
