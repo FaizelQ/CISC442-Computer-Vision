@@ -4,7 +4,7 @@ import numpy as np
 import pr1Functions as faiCv
 
 # Load the YAML configuration file
-with open('config.yaml', 'r') as config_file:
+with open('./config.yaml', 'r') as config_file:
     config = yaml.safe_load(config_file)
 
 # Extract the file location for the image you want to process

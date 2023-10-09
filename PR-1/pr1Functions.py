@@ -141,9 +141,8 @@ def laplacianPyramid(I_input, n):
 
     # Bottom to top construction
     for i in range(n - 1):
-        laplacian_pyramid.append(
-            gaussian_pyramid[i] - expand(gaussian_pyramid[i + 1]))
-
+        difference = gaussian_pyramid[i] - expand(gaussian_pyramid[i + 1])
+        laplacian_pyramid.append(difference)
     # Ln = Gn (Top level)
     laplacian_pyramid.append(gaussian_pyramid[n - 1])
 
