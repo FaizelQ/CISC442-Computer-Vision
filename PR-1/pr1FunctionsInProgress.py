@@ -7,7 +7,7 @@ import logging as log
 # Write a function Convolve (I, H). I is an image of varying size, H is a kernel of varying size.
 # The output of the function should be the convolution result that is displayed.
 
-
+# Function performs convolution on an image with a input kernel
 def convolve(I_input, H):
     # Checking if image is appropriate for manipulation
     if I_input is None:
@@ -48,7 +48,7 @@ def convolve(I_input, H):
 # by half the width and height of the input. Remember to Gaussian filter the image before reducing it;
 # use separable 1D Gaussian kernels.
 
-
+# Function downsamples and image by a factor of 2, after applying Gaussian blurring
 def reduce(I_input):
     # Height, width, RGB channels (channels should be 3 - R, G, B)
     rows, cols, channels = I_input.shape
@@ -66,7 +66,7 @@ def reduce(I_input):
 # Write a function Expand(I) that takes image I as input and outputs a copy of the image expanded,
 # twice the width and height of the input.
 
-
+# Function upsamples an image by a factor of 2
 def expand(I_input):
     # Height, width, RGB channels (channels should be 3 - R, G, B)
     rows, cols, channels = I_input.shape
@@ -79,7 +79,7 @@ def expand(I_input):
 
 # Use the Reduce() function to write the GaussianPyramid(I,n) function, where n is the no. of levels.
 
-
+# Function constructs a gaussian pyramid with n levels
 def gaussianPyramid(I_input, n):
     # Create list to hold each level of pyramid
     gaussian_pyramind = []
@@ -97,7 +97,7 @@ def gaussianPyramid(I_input, n):
 
 # Use the above functions to write LaplacianPyramids(I,n) that produces n level Laplacian pyramid of I.
 
-
+# Function constructs a laplacian pyramid with n levels
 def laplacianPyramid(I_input, n):
     # Construct Gaussian pyramid
     gaussian_pyramid = gaussianPyramid(I_input, n)
@@ -121,7 +121,7 @@ def laplacianPyramid(I_input, n):
 # Write the Reconstruct(LI,n) function which collapses the Laplacian pyramid LI of n levels
 # to generate the original image. Report the error in reconstruction using image difference.
 
-
+# Function reconstructs and image to a single matrix using Laplacian pyramids.
 def reconstruct(LI, n):
 
     # Initalize output image as highest level of pyramid
@@ -136,8 +136,6 @@ def reconstruct(LI, n):
     return I_output
 
 # Function calculates the Mean Squared Error of the image difference between the original image and reconstructed image.
-
-
 def calculate_mse(image_1, image_2):
     # Convert the images to grayscale.
     image_1_gray = cv2.cvtColor(image_1, cv2.COLOR_BGR2GRAY)
@@ -164,9 +162,9 @@ def calculate_mse(image_1, image_2):
 # Helper function to resize and pad images for blending using copyMakeBorder
 
 
-def resize_and_pad(left_image, right_image, overlap_region):
-    resized_left = None
-    resied_right = None
+def resize_and_pad(left_image, right_image, x, overlap_region):
+    resized_left = np.empty((0, 0, 3), dtype=np.uint8)
+    resized_right = np.empty((0, 0, 3), dtype=np.uint8)
     # Left and right image dimensions/shape
     l_height, l_width, l_rgb = left_image.shape
     r_height, r_width, r_rgb = right_image.shape
@@ -175,7 +173,7 @@ def resize_and_pad(left_image, right_image, overlap_region):
     # If right image is bigger than left image, resize left image by adding padding to bottom
     if r_height - l_height > 0:
         resized_left = cv2.copyMakeBorder(
-            src=left_image, top=0, bottom=r_height - l_height, left=0, right=r_width - x, borderType=0)
+            src=left_image, top=0, bottom=r_height - l_height, left=0, right=r_width - overlap_region, borderType=0)
     # If left image is bigger, only create add padding for overlap region to resize
     else:
         resized_left = cv2.copyMakeBorder(
@@ -189,8 +187,11 @@ def resize_and_pad(left_image, right_image, overlap_region):
             src=right_image, top=0, bottom=l_height - r_height, left=x, right=0, borderType=0)
     # If right image is bigger, only create add padding for overlap region to resize
     else:
-        resied_right = cv2.copyMakeBorder(
+        resized_right = cv2.copyMakeBorder(
             src=right_image, top=0, bottom=0, left=x, right=0, borderType=0)
+
+    return resized_left, resized_right
+# Function blends two images together with n_levels for pyramids and uses mouse click events for blend boundary
 
 
 def blend_images(left_image, right_image, n_levels):
@@ -198,24 +199,29 @@ def blend_images(left_image, right_image, n_levels):
     # Helper and handler function for registering mouse click coordinates
     def mouse_handler_onClick(event, x, y, flags, params):
         if event == cv2.EVENT_LBUTTONDOWN:
-            cv2.destroyAllWindows()
+            print(f"PRINTING x: {x}")
+            print(f"PRINTING x, y {(x,y)}")
+            #x_resize = x
+            #cv2.destroyAllWindows()
             # Image width - coordinate of mouse click
             overlap_region = left_image.shape[1] - x
             # Resize images
-            resized_left, resized_right = resize_and_pad(
-                left_image, right_image, x)
+            # resized_left, resized_right = resize_and_pad(
+            #     left_image, right_image, x, overlap_region)
+            resized_left = cv2.copyMakeBorder(left_image, 0, right_image.shape[0] - left_image.shape[0] if right_image.shape[0] - left_image.shape[0] > 0 else 0, 0, right_image.shape[1] - overlap_region, 0)
+            resized_right = cv2.copyMakeBorder(right_image, 0, left_image.shape[0] - right_image.shape[0] if left_image.shape[0] - right_image.shape[0] > 0 else 0, x, 0, 0)
             # Create bitmask - max(left vs right height) x right width x RGB
             bitmask = np.empty(
-                (max(left.shape[0], right.shape[0]), right.shape[1] + x, left.shape[2]))
+                (max(left_image.shape[0], right_image.shape[0]), right_image.shape[1] + x, left_image.shape[2]))
             bitmask[:, x: x + overlap_region] = [0.5] * left_image.shape[2]
-            bitmask[:, x + overlap_region:] = [1] * left_image[2]
+            bitmask[:, x + overlap_region:] = [1] * left_image.shape[2]
 
-            left_image_laplacian = laplacianPyramid(resized_left, n)
-            right_image_laplacian = laplacianPyramid(resized_right, n)
+            left_image_laplacian = laplacianPyramid(resized_left, n_levels)
+            right_image_laplacian = laplacianPyramid(resized_right, n_levels)
             bitmask_gp = gaussianPyramid(bitmask, b)
 
             laplacian_result = []
-            for i in range(n):
+            for i in range(n_levels):
                 layer = cv.multiply(np.float64(left_image_laplacian[i]), (
                     1 - bitmask_gp[i])) + cv.multiply(np.float64(right_image_laplacian[i]), bitmask_gp[i])
                 layer[layer > 255] = 255
@@ -223,15 +229,15 @@ def blend_images(left_image, right_image, n_levels):
                 layer = np.uint8(layer)
 
                 laplacian_result.append(layer)
-            image_output = reconstruct(laplacian_result, n)
+            image_output = reconstruct(laplacian_result, n_levels)
             cv2.imwrite("./images/Q7-Blend.png", image_output)
             return
         else:
             return
-    
+
     print("Mark boundary on left image (one click)")
     cv2.namedWindow('Image Window')
     cv2.setMouseCallback('Image Window', mouse_handler_onClick)
     cv2.imshow('Image Window', left_image)
     cv2.waitKey(0)
-
+    print(x)
