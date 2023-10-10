@@ -62,4 +62,4 @@ print(f"Image Difference: {image_difference}")
 
 one = cv2.imread("./images/Test_A1.png")
 two = cv2.imread("./images/Test_A2.png")
-test = faiCv.get_mouse_coordinates(one, two)
+faiCv.blend_images(one, two, 4)

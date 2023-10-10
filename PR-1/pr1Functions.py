@@ -12,7 +12,7 @@ def convolve(I_input, H):
     # Checking if image is appropriate for manipulation
     if I_input is None:
         raise ValueError("Image does not exist")
-    elif I_input.ndim < 2:
+    elif I_input.ndim < 3:
         raise ValueError("Image must be 2D matrix")
     else:
         log.info("Image is exists and is valid")
@@ -136,6 +136,8 @@ def reconstruct(LI, n):
     return I_output
 
 # Function calculates the Mean Squared Error of the image difference between the original image and reconstructed image.
+
+
 def calculate_mse(image_1, image_2):
     # Convert the images to grayscale.
     image_1_gray = cv2.cvtColor(image_1, cv2.COLOR_BGR2GRAY)
@@ -159,35 +161,77 @@ def calculate_mse(image_1, image_2):
 # the left image with the right image. Note the left and right images share a joint region. Submit four results of
 # mosaicking. Each mosaic can be comprised of 2 individual images from different cameras/viewpoints.
 
+# Helper function to resize and pad images for blending using copyMakeBorder
 
-def get_mouse_coordinates(left_image, right_image):
-    # List to store coordinates
-    mouse_coordinates = []
-    images = [left_image, right_image]
 
-    print("Mark boundary on left image (top to bottom)")
-    print("Mark boundary on right image (top to bottom)")
+def resize_and_pad(left_image, right_image, overlap_region):
+    resized_left = None
+    resied_right = None
+    # Left and right image dimensions/shape
+    l_height, l_width, l_rgb = left_image.shape
+    r_height, r_width, r_rgb = right_image.shape
 
-    for image in images:
-        cv2.namedWindow('Image Window')
+    # Resize left image
+    # If right image is bigger than left image, resize left image by adding padding to bottom
+    if r_height - l_height > 0:
+        resized_left = cv2.copyMakeBorder(
+            src=left_image, top=0, bottom=r_height - l_height, left=0, right=r_width - x, borderType=0)
+    # If left image is bigger, only create add padding for overlap region to resize
+    else:
+        resized_left = cv2.copyMakeBorder(
+            src=left_image, top=0, bottom=0, left=0, right=r_width - x, borderType=0)
 
-        # Function handler
-        def mouse_handler_function(event, x, y, flags, param):
-            # Left mouse button clicked
-            if event == cv2.EVENT_LBUTTONDOWN:
-                mouse_coordinates.append((x, y))
-                # Draw circle on point
-                cv2.circle(image, (x, y), 3, (255, 0, 0), -1)
-                cv2.imshow('Image Window', image)
-                print(f"Left button clicked ({x}, {y})")
+    # Resize right image
+    # If left image is bigger than right image, resize left image by adding padding to bottom
+    # Create padding for left size of right image with padding
+    if l_height - r_height > 0:
+        resized_right = cv2.copyMakeBorder(
+            src=right_image, top=0, bottom=l_height - r_height, left=x, right=0, borderType=0)
+    # If right image is bigger, only create add padding for overlap region to resize
+    else:
+        resied_right = cv2.copyMakeBorder(
+            src=right_image, top=0, bottom=0, left=x, right=0, borderType=0)
 
-        # Callback
-        cv2.setMouseCallback('Image Window', mouse_handler_function)
-        # Display iamge
-        cv2.imshow('Image Window', image)
-        cv2.waitKey(0)
-        cv2.destroyWindow('Image Window')
 
-    return mouse_coordinates
+def blend_images(left_image, right_image, n_levels):
 
-def blend_images(left_image, right_image, mouse_coordinates):
+    # Helper and handler function for registering mouse click coordinates
+    def mouse_handler_onClick(event, x, y, flags, params):
+        if event == cv2.EVENT_LBUTTONDOWN:
+            cv2.destroyAllWindows()
+            # Image width - coordinate of mouse click
+            overlap_region = left_image.shape[1] - x
+            # Resize images
+            resized_left, resized_right = resize_and_pad(
+                left_image, right_image, x)
+            # Create bitmask - max(left vs right height) x right width x RGB
+            bitmask = np.empty(
+                (max(left.shape[0], right.shape[0]), right.shape[1] + x, left.shape[2]))
+            bitmask[:, x: x + overlap_region] = [0.5] * left_image.shape[2]
+            bitmask[:, x + overlap_region:] = [1] * left_image[2]
+
+            left_image_laplacian = laplacianPyramid(resized_left, n)
+            right_image_laplacian = laplacianPyramid(resized_right, n)
+            bitmask_gp = gaussianPyramid(bitmask, b)
+
+            laplacian_result = []
+            for i in range(n):
+                layer = cv.multiply(np.float64(left_image_laplacian[i]), (
+                    1 - bitmask_gp[i])) + cv.multiply(np.float64(right_image_laplacian[i]), bitmask_gp[i])
+                layer[layer > 255] = 255
+                layer[layer < 0] = 0
+                layer = np.uint8(layer)
+
+                laplacian_result.append(layer)
+            image_output = reconstruct(laplacian_result, n)
+            cv2.imwrite("./images/Q7-Blend.png", image_output)
+            return
+        else:
+            return
+    
+    print("Mark boundary on left image (one click)")
+    cv2.namedWindow('Image Window')
+    cv2.setMouseCallback('Image Window', mouse_handler_onClick)
+    cv2.imshow('Image Window', left_image)
+    cv2.waitKey(0)
+
