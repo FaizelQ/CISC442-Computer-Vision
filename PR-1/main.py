@@ -60,21 +60,22 @@ cv2.imwrite("./images/Q6-reconstructed-lena.png", reconstructed_image)
 image_difference = faiCv.calc_mse(image, reconstructed_image)
 print(f"Image Difference: {image_difference}")
 # Problem 7 - Mosaicing
+# 1
 A1 = cv2.imread("./images/Test_A1.png")
 A2 = cv2.imread("./images/Test_A2.png")
 mosaic = faiCv.blend_images(A1, A2, 4)
 cv2.imwrite("./images/Q7-A.png", mosaic)
-
+# 2
 B1 = cv2.imread("./images/Test_B1.png")
 B2 = cv2.imread("./images/Test_B2.png")
 mosaic = faiCv.blend_images(B1, B2, 4)
 cv2.imwrite("./images/Q7-B.png", mosaic)
-
+# 3
 C1 = cv2.imread("./images/Test_C1.png")
 C2 = cv2.imread("./images/Test_C2.png")
 mosaic = faiCv.blend_images(C1, C2, 4)
 cv2.imwrite("./images/Q7-C.png", mosaic)
-
+# 4
 D1 = cv2.imread("./images/Test_D1.png")
 D2 = cv2.imread("./images/Test_D2.png")
 mosaic = faiCv.blend_images(D1, D2, 4)
