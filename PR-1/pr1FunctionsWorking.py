@@ -212,8 +212,7 @@ def resize_and_pad(left, right, boundaries):
     overlapping_pixels_1 = left_width - boundaries[0][0]
     overlapping_pixels_2 = boundaries[1][0]
 
-    output_width = left_width + right_width - \
-        overlapping_pixels_1 - overlapping_pixels_2
+    output_width = left_width + right_width - overlapping_pixels_1 - overlapping_pixels_2
 
     padding_right = max(0, output_width - left_width)
     padding_left = max(0, output_width - right_width)

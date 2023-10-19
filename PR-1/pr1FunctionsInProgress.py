@@ -111,7 +111,7 @@ def laplacianPyramid(I_input, n):
         difference = cv2.subtract(gaussian_pyramid[i], level_up)
         laplacian_pyramid.append(difference)
     # Ln = Gn (Top level)
-    laplacian_pyramid.append(gaussian_pyramid[n - 1])
+    laplacian_pyramid.append(gaussian_pyramid[-1])
 
     return laplacian_pyramid
 
@@ -131,12 +131,12 @@ def reconstruct(LI, n):
     for i in range(n - 2, -1, -1):
         # Upsample current level for matrix addition and so dimensions match
         I_output = expand(I_output)
-        I_output += LI[i]
+        I_output = cv2.add(I_output, LI[i])
 
     return I_output
 
 # Function calculates the Mean Squared Error of the image difference between the original image and reconstructed image.
-def calculate_mse(image_1, image_2):
+def calc_mse(image_1, image_2):
     # Convert the images to grayscale.
     image_1_gray = cv2.cvtColor(image_1, cv2.COLOR_BGR2GRAY)
     image_2_gray = cv2.cvtColor(image_2, cv2.COLOR_BGR2GRAY)
@@ -218,7 +218,7 @@ def blend_images(left_image, right_image, n_levels):
 
             left_image_laplacian = laplacianPyramid(resized_left, n_levels)
             right_image_laplacian = laplacianPyramid(resized_right, n_levels)
-            bitmask_gp = gaussianPyramid(bitmask, b)
+            bitmask_gp = gaussianPyramid(bitmask, n)
 
             laplacian_result = []
             for i in range(n_levels):
