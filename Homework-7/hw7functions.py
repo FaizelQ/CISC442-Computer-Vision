@@ -38,7 +38,7 @@ def multi_scale(I_input, n_levels):
 
 
 '''
-Creates lapclian pyramid from our multi_scale images
+Creates lapclian pyramid using laplacian kernel cv2.Laplacian
 '''
 
 
@@ -58,7 +58,7 @@ def laplacianPyramid(I_input, n_levels):
 
 
 '''
-Function is same as function above, except the cv2.imwrite path names are difference
+Creates laplacian pyramid using multi-res gaussian pyramid
 '''
 
 
@@ -77,7 +77,9 @@ def q4_laplacianPyramid(I_input, n_levels):
     cv2.imwrite(f"./images/Q4-Laplacian_Level-{n_levels - 1}-Einstein.jpeg", laplacian_pyramid[n_levels - 1])
     return laplacian_pyramid
 
-
+'''
+Creates laplacian pyramid from multi-scale gaussian pyramid
+'''
 def q5_laplacianPyramid(I_input, n_levels):
     gaussian_pyramid = multi_scale(I_input, n_levels)
     laplacian_pyramid = []
