@@ -43,12 +43,13 @@ Creates lapclian pyramid from our multi_scale images
 
 
 def laplacianPyramid(I_input, n_levels):
-
     gaussian_pyramid = multi_res(I_input, n_levels)
     laplacian_pyramid = []
 
     for i in range(0, n_levels - 1):
-        laplace_level = cv2.Laplacian(gaussian_pyramid[i], ddepth=-1)
+        height, width, channels = gaussian_pyramid[i].shape
+        resized = cv2.resize((gaussian_pyramid[i + 1]), (width, height))
+        laplace_level = cv2.subtract(gaussian_pyramid[i], resized)
         laplacian_pyramid.append(laplace_level)
         cv2.imwrite(f"./images/Q3-Laplacian_Level-{i}-Einstein.jpeg", laplace_level)
 
